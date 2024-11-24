@@ -1,0 +1,73 @@
+Architektury Výpočetních Systémů (AVS 2024)
+Projekt č. 2 (PMC)
+Login: xlogin00
+
+Úloha 1: Paralelizace původního řešení
+===============================================================================
+1) Kterou ze smyček (viz zadání) je vhodnější paralelizovat a co způsobuje 
+   neefektivitu paralelizaci té druhé?
+   
+2) Jak jste ve funkci LoopMeshBuilder::marchCubes zajistili správný výsledek 
+  (počet trojúhelníků) vrácený touto funkcí? Popište jaké řešení jste zvolili a proč.  
+  
+3) Jaké plánování (rozdělení práce mezi vlákna) jste zvolili a proč? Popište, na
+   jakých datech (počet vláken, velikost problému) jste k závěrům došli.  
+
+Úloha 2: Paralelní průchod stromem
+===============================================================================
+1) Stručně popište použití OpenMP tasků ve vašem řešení. 
+
+2) Jakou hodnotu cut-off jste zvolili? Jaké hodnoty "cut-off" jste zkoušeli, 
+   na jak velkých velikostech problému a jakých času jste dosáhli? 
+   Odůvodněte vaši volbu.
+
+3) Jakým způsobem zajišťujete ukládání trojúhelníků z několika vláken současně 
+   v metodě LoopMeshBuilder::emitTriangle?
+
+
+Úloha 3: Grafy škálování všech řešení
+===============================================================================
+
+1) Stručně zhodnoťte efektivitu vytvořených řešení 
+   (na základě VŠECH odevzdaných grafů ŠKÁLOVÁNÍ).
+
+2) V jakém případě (v závislosti na počtu bodů ve vstupním souboru a velikosti 
+   mřížky) bude vaše řešení 1. úlohy neefektivní? 
+   (pokud takový případ existuje a je vidět ve vašem grafu)
+
+3) Je (nebo není) stromový algoritmus efektivnější z pohledu slabého škálování 
+   vzhledem ke vstupu?
+
+4) Do souboru 3_4.txt napište svůj login, který používáte na Barboře, na druhý
+   řádek napište počet úloh (jobs), které jste spustili za dobu řešení projektu 2
+   a na třetí řádek uveďte, kolik času tyto úlohy běžely (formát HH:MM:SS). 
+   V souboru 3_4.txt využijte předpřipravené kostry - údaje přepište. Můžete využít
+   údajů ze Slurm plánovače, nepočítejte úlohy se suffixem (přepínač -X).
+
+
+Úloha 4: Analýza využití jader pomocí VTune
+================================================================================
+
+1) Jaké bylo průměrné využití jader pro všechny tři implementace s omezením na 
+   18 vláken? Na kolik procent byly využity? Hodnoty zapište do souboru 4_1.txt
+   (využijte předpřipravené kostry v souboru - čísla přepište).
+   
+   ref:
+   loop:
+   tree:
+
+2) Jaké bylo průměrné využití jader pro všechny tři implementace s využitím 
+   všech jader? Na kolik procent se podařilo využít obě CPU? Hodnoty zapište 
+   do souboru 4_2.txt (využijte předpřipravené kostry v souboru - čísla přepište).
+   
+   ref:
+   loop:
+   tree:   
+
+3) Ze získaných hodnot v otázkách 4.1 a 4.2 vypočítejte efektivitu vašeho 
+   řešení loop a tree vůči ref. Hodnoty zapište do souboru 4_3.txt 
+   (využijte předpřipravené kostry v souboru - čísla přepište):
+   "loop z 4.1" vs. "ref z 4.1"
+   "tree z 4.1" vs. "ref z 4.1"
+   "loop z 4.2" vs. "ref z 4.2"
+   "tree z 4.2" vs. "ref z 4.2"
