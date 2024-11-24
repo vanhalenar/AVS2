@@ -1,11 +1,11 @@
 /**
  * @file    loop_mesh_builder.h
  *
- * @author  FULL NAME <xlogin00@stud.fit.vutbr.cz>
+ * @author  Timotej Halenár <xhalen00@stud.fit.vutbr.cz>
  *
  * @brief   Parallel Marching Cubes implementation using OpenMP loops
  *
- * @date    DATE
+ * @date    24.11.2024
  **/
 
 #ifndef LOOP_MESH_BUILDER_H
@@ -24,6 +24,8 @@ protected:
     float evaluateFieldAt(const Vec3_t<float> &pos, const ParametricScalarField &field);
     void emitTriangle(const Triangle_t &triangle);
     const Triangle_t *getTrianglesArray() const { return nullptr; }
+
+    std::vector<Triangle_t> mTriangles; ///< Temporary array of triangles
 };
 
 #endif // LOOP_MESH_BUILDER_H
