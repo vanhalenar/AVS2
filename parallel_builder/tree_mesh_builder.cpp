@@ -15,7 +15,7 @@
 #include "tree_mesh_builder.h"
 
 TreeMeshBuilder::TreeMeshBuilder(unsigned gridEdgeSize)
-    : BaseMeshBuilder(gridEdgeSize, "Octree")
+    : BaseMeshBuilder(gridEdgeSize, "Octree"), frac(sqrt(3) / 2), sc_vertexNormPos_0(sc_vertexNormPos[0])
 {
 }
 
@@ -43,30 +43,23 @@ unsigned TreeMeshBuilder::processCube(size_t cubeSize, Vec3_t<float> cubeOffset,
         return buildCube(cubeOffset, field);
     }
 
-    // TODO
-    //  check if surface passes through here
-    //  if not, return
-    //  if yes, divide into 8 more cubes
-
     size_t halfSize = cubeSize / 2;
-    if (halfSize < 1)
-    {
-        throw "WrongSize";
-    }
 
-    float floatHalf = (float)halfSize;
+    float floatHalf = halfSize;
 
     float x = cubeOffset.x;
     float y = cubeOffset.y;
     float z = cubeOffset.z;
 
     Vec3_t<float> middleCube(x + floatHalf, y + floatHalf, z + floatHalf);
-    CubeCornerVerts_t cubeCorners;
-    transformCubeVertices(middleCube, sc_vertexNormPos, cubeCorners);
+    Vec3_t<float> bottomCorner(
+        (middleCube.x + sc_vertexNormPos_0.x) * mGridResolution,
+        (middleCube.y + sc_vertexNormPos_0.y) * mGridResolution,
+        (middleCube.z + sc_vertexNormPos_0.z) * mGridResolution);
 
-    float midVal = evaluateFieldAt(cubeCorners[0], field);
+    float midVal = evaluateFieldAt(bottomCorner, field);
 
-    if (midVal > mIsoLevel + (sqrt(3) / 2.0f) * floatHalf)
+    if (midVal > mIsoLevel + frac * floatHalf)
     {
         return 0;
     }
