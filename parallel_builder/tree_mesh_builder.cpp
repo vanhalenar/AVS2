@@ -35,11 +35,8 @@ unsigned TreeMeshBuilder::processCube(size_t cubeSize, Vec3_t<float> cubeOffset,
 {
     unsigned totalTriangles = 0;
 
-    // std::cout << "size: " << cubeSize << "offset: " << cubeOffset.x << ", " << cubeOffset.y << ", " << cubeOffset.z << std::endl;
-
     if (cubeSize == 1)
     {
-        // std::cout << "offset: " << cubeOffset.x << ", " << cubeOffset.y << ", " << cubeOffset.z << std::endl;
         return buildCube(cubeOffset, field);
     }
 
@@ -64,23 +61,31 @@ unsigned TreeMeshBuilder::processCube(size_t cubeSize, Vec3_t<float> cubeOffset,
         return 0;
     }
 
-    Vec3_t<float> cubeOffset0(x, y, z);
-    Vec3_t<float> cubeOffset1(x + floatHalf, y, z);
-    Vec3_t<float> cubeOffset2(x, y + floatHalf, z);
-    Vec3_t<float> cubeOffset3(x + floatHalf, y + floatHalf, z);
-    Vec3_t<float> cubeOffset4(x, y, z + floatHalf);
-    Vec3_t<float> cubeOffset5(x + floatHalf, y, z + floatHalf);
-    Vec3_t<float> cubeOffset6(x, y + floatHalf, z + floatHalf);
-    Vec3_t<float> cubeOffset7(x + floatHalf, y + floatHalf, z + floatHalf);
+    Vec3_t<float> offsets[8] = {
+        Vec3_t<float>(x, y, z),
+        Vec3_t<float>(x + floatHalf, y, z),
+        Vec3_t<float>(x, y + floatHalf, z),
+        Vec3_t<float>(x + floatHalf, y + floatHalf, z),
+        Vec3_t<float>(x, y, z + floatHalf),
+        Vec3_t<float>(x + floatHalf, y, z + floatHalf),
+        Vec3_t<float>(x, y + floatHalf, z + floatHalf),
+        Vec3_t<float>(x + floatHalf, y + floatHalf, z + floatHalf)};
 
-    totalTriangles += processCube(halfSize, cubeOffset0, field);
-    totalTriangles += processCube(halfSize, cubeOffset1, field);
-    totalTriangles += processCube(halfSize, cubeOffset2, field);
-    totalTriangles += processCube(halfSize, cubeOffset3, field);
-    totalTriangles += processCube(halfSize, cubeOffset4, field);
-    totalTriangles += processCube(halfSize, cubeOffset5, field);
-    totalTriangles += processCube(halfSize, cubeOffset6, field);
-    totalTriangles += processCube(halfSize, cubeOffset7, field);
+#pragma omp parallel
+    {
+#pragma omp single nowait
+        {
+            for (int i = 0; i < 8; i++)
+            {
+#pragma omp task shared(totalTriangles, field, i) firstprivate(halfSize, offsets)
+                {
+                    unsigned localTriangles = processCube(halfSize, offsets[i], field);
+#pragma omp atomic
+                    totalTriangles += localTriangles;
+                }
+            }
+        }
+    }
 
     return totalTriangles;
 }
@@ -98,6 +103,7 @@ float TreeMeshBuilder::evaluateFieldAt(const Vec3_t<float> &pos, const Parametri
 
     // 2. Find minimum square distance from points "pos" to any point in the
     //    field.
+    // #pragma omp parallel for reduction(min : value) shared(pos, pPoints, count)
     for (unsigned i = 0; i < count; ++i)
     {
         float distanceSquared = (pos.x - pPoints[i].x) * (pos.x - pPoints[i].x);
@@ -115,5 +121,6 @@ float TreeMeshBuilder::evaluateFieldAt(const Vec3_t<float> &pos, const Parametri
 
 void TreeMeshBuilder::emitTriangle(const BaseMeshBuilder::Triangle_t &triangle)
 {
+#pragma omp critical
     mTriangles.push_back(triangle);
 }
