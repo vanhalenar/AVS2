@@ -61,7 +61,7 @@ Login: xhalen00
 ================================================================================
 
 1) Jaké bylo průměrné využití jader pro všechny tři implementace s omezením na 
-   18 vláken? Na kolik procent byly využity? Hodnoty zapište do souboru 4_1.txt
+   18 vláken? Hodnoty zapište do souboru 4_1.txt
    (využijte předpřipravené kostry v souboru - čísla přepište).
    
    ref:
@@ -69,17 +69,21 @@ Login: xhalen00
    tree:
 
 2) Jaké bylo průměrné využití jader pro všechny tři implementace s využitím 
-   všech jader? Na kolik procent se podařilo využít obě CPU? Hodnoty zapište 
-   do souboru 4_2.txt (využijte předpřipravené kostry v souboru - čísla přepište).
+   všech jader? Hodnoty zapište do souboru 4_2.txt (využijte předpřipravené 
+   kostry v souboru - čísla přepište).
    
    ref:
    loop:
    tree:   
 
-3) Ze získaných hodnot v otázkách 4.1 a 4.2 vypočítejte efektivitu vašeho 
-   řešení loop a tree vůči ref. Hodnoty zapište do souboru 4_3.txt 
+3) Vypočítejte efektivitu vašeho řešení loop a tree vůči ref pro 18 a 36 vláken. 
+   Hodnoty naměřte ručně na výpočetním uzlu, ne přes VTune. Použijte následující parametry:
+   
+   ./PMC --builder {ref, tree, loop} -t {18, 36} --grid 128 ../data/bun_zipper_res3.pts 
+   
+   Hodnoty zapište do souboru 4_3.txt 
    (využijte předpřipravené kostry v souboru - čísla přepište):
-   "loop z 4.1" vs. "ref z 4.1"
-   "tree z 4.1" vs. "ref z 4.1"
-   "loop z 4.2" vs. "ref z 4.2"
-   "tree z 4.2" vs. "ref z 4.2"
+   "loop (18)" vs. "ref"
+   "tree (18)" vs. "ref"
+   "loop (36)" vs. "ref"
+   "tree (36)" vs. "ref"
