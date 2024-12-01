@@ -28,7 +28,7 @@ unsigned TreeMeshBuilder::marchCubes(const ParametricScalarField &field)
 
     Vec3_t<float> cubeOffset(0, 0, 0);
 
-    unsigned totalTriangles;
+    unsigned totalTriangles = 0;
 #pragma omp parallel shared(totalTriangles)
     {
 #pragma omp single nowait
@@ -81,7 +81,7 @@ unsigned TreeMeshBuilder::processCube(size_t cubeSize, Vec3_t<float> cubeOffset,
 
     for (int i = 0; i < 8; i++)
     {
-#pragma omp task shared(totalTriangles, field, i) firstprivate(halfSize, offsets)
+#pragma omp task shared(totalTriangles, field) firstprivate(halfSize, offsets)
         {
             unsigned localTriangles = processCube(halfSize, offsets[i], field);
 #pragma omp atomic update
