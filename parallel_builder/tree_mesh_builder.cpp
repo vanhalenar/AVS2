@@ -56,7 +56,7 @@ unsigned TreeMeshBuilder::processCube(size_t cubeSize, Vec3_t<float> cubeOffset,
 
     float midVal = evaluateFieldAt(bottomCorner, field);
 
-    if (midVal > mIsoLevel + frac * (float)cubeSize * mGridResolution)
+    if (midVal > mIsoLevel + frac * cubeSize)
     {
         return 0;
     }
