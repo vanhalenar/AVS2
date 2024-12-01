@@ -26,7 +26,7 @@ unsigned TreeMeshBuilder::marchCubes(const ParametricScalarField &field)
     // It is also strongly suggested to first implement Octree as sequential
     // code and only when that works add OpenMP tasks to achieve parallelism.
 
-    Vec3_t<float> cubeOffset = (0, 0, 0);
+    Vec3_t<float> cubeOffset(0, 0, 0);
 
     unsigned totalTriangles;
 #pragma omp parallel shared(totalTriangles)
