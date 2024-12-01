@@ -15,7 +15,7 @@
 #include "tree_mesh_builder.h"
 
 TreeMeshBuilder::TreeMeshBuilder(unsigned gridEdgeSize)
-    : BaseMeshBuilder(gridEdgeSize, "Octree"), frac(sqrt(3) / 2), sc_vertexNormPos_0(sc_vertexNormPos[0])
+    : BaseMeshBuilder(gridEdgeSize, "Octree"), frac(sqrt(3.0f) / 2.0f), sc_vertexNormPos_0(sc_vertexNormPos[0])
 {
 }
 
@@ -56,7 +56,7 @@ unsigned TreeMeshBuilder::processCube(size_t cubeSize, Vec3_t<float> cubeOffset,
 
     float midVal = evaluateFieldAt(bottomCorner, field);
 
-    if (midVal > mIsoLevel + frac * cubeSize)
+    if (midVal > mIsoLevel + frac * cubeSize * mGridResolution)
     {
         return 0;
     }
