@@ -1,14 +1,24 @@
 Architektury Výpočetních Systémů (AVS 2024)
 Projekt č. 2 (PMC)
-Login: xlogin00
+Login: xhalen00
 
 Úloha 1: Paralelizace původního řešení
 ===============================================================================
 1) Kterou ze smyček (viz zadání) je vhodnější paralelizovat a co způsobuje 
    neefektivitu paralelizaci té druhé?
+
+   Vhodnejšie je paralelizovať slučku v metóde marchCubes, pretože je na vyššej úrovni
+   a druhá slučka je zanorená. Všeobecne platí, že je vhodné paralelizovať slučky na najvyššej
+   úrovni.
    
 2) Jak jste ve funkci LoopMeshBuilder::marchCubes zajistili správný výsledek 
   (počet trojúhelníků) vrácený touto funkcí? Popište jaké řešení jste zvolili a proč.  
+
+   Pomocou doložky reduction(+ : totalTriangles), ktorá zabezpečuje thread-safe pričítavanie
+   hodnôt do premennej totalTriangles. Každé vlákno si drží privátnu kópiu premennej, a na konci
+   slučky je pôvodná premenná totalTriangles atomicky aktualizovaná každým vláknom. Použitie
+   redukcie je tak vhodný spôsob zabezpečenia správneho počtu trojuholníkov.
+
   
 3) Jaké plánování (rozdělení práce mezi vlákna) jste zvolili a proč? Popište, na
    jakých datech (počet vláken, velikost problému) jste k závěrům došli.  
@@ -23,6 +33,8 @@ Login: xlogin00
 
 3) Jakým způsobem zajišťujete ukládání trojúhelníků z několika vláken současně 
    v metodě LoopMeshBuilder::emitTriangle?
+
+   Vytváram kritickú sekciu pomocou #pragma openmp critical.
 
 
 Úloha 3: Grafy škálování všech řešení
