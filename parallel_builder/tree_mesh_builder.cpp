@@ -15,7 +15,7 @@
 #include "tree_mesh_builder.h"
 
 TreeMeshBuilder::TreeMeshBuilder(unsigned gridEdgeSize)
-    : BaseMeshBuilder(gridEdgeSize, "Octree"), frac(sqrt(3.0f) / 2.0f)
+    : BaseMeshBuilder(gridEdgeSize, "Octree"), FRAC(sqrt(3.0f) / 2.0f), CUTOFF(2)
 {
 }
 
@@ -64,7 +64,7 @@ unsigned TreeMeshBuilder::processCube(size_t cubeSize, Vec3_t<float> cubeOffset,
 
     float midVal = evaluateFieldAt(bottomCorner, field);
 
-    if (midVal > mIsoLevel + frac * cubeSize * mGridResolution)
+    if (midVal > mIsoLevel + FRAC * cubeSize * mGridResolution)
     {
         return 0;
     }
@@ -79,17 +79,36 @@ unsigned TreeMeshBuilder::processCube(size_t cubeSize, Vec3_t<float> cubeOffset,
         Vec3_t<float>(x, y + floatHalf, z + floatHalf),
         Vec3_t<float>(x + floatHalf, y + floatHalf, z + floatHalf)};
 
-    for (int i = 0; i < 8; i++)
+    if (cubeSize < CUTOFF)
     {
-#pragma omp task shared(totalTriangles, field) firstprivate(halfSize, offsets)
+        for (int i = 0; i < cubeSize; i++)
         {
-            unsigned localTriangles = processCube(halfSize, offsets[i], field);
-#pragma omp atomic update
-            totalTriangles += localTriangles;
+            for (int j = 0; j < cubeSize; j++)
+            {
+                for (int k = 0; k < cubeSize; k++)
+                {
+                    Vec3_t<float> cubeOffset(x + i, y + j, z + k);
+                    totalTriangles += buildCube(cubeOffset, field);
+                }
+            }
         }
+        return totalTriangles;
     }
+
+    else
+    {
+        for (int i = 0; i < 8; i++)
+        {
+#pragma omp task shared(totalTriangles, field) firstprivate(halfSize, offsets)
+            {
+                unsigned localTriangles = processCube(halfSize, offsets[i], field);
+#pragma omp atomic update
+                totalTriangles += localTriangles;
+            }
+        }
 #pragma omp taskwait
-    return totalTriangles;
+        return totalTriangles;
+    }
 }
 
 float TreeMeshBuilder::evaluateFieldAt(const Vec3_t<float> &pos, const ParametricScalarField &field)

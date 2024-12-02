@@ -26,7 +26,8 @@ protected:
     const Triangle_t *getTrianglesArray() const { return mTriangles.data(); }
 
     std::vector<Triangle_t> mTriangles; ///< Temporary array of triangles
-    const float frac;
+    const float FRAC;
+    const size_t CUTOFF;
 };
 
 #endif // TREE_MESH_BUILDER_H
