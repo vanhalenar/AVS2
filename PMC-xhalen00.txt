@@ -26,15 +26,31 @@ Login: xhalen00
 Úloha 2: Paralelní průchod stromem
 ===============================================================================
 1) Stručně popište použití OpenMP tasků ve vašem řešení. 
+   
+   Tasky sú použité na rekurzívne volanie metódy processCube. Každé ďalšie volanie
+   je nový task, a teda je spracované, keď je nejaké vlákno voľné. Toto je optimálny 
+   spôsob spracovania, pretože ide o dynamický a iregulárny výpočet, a pomocou taskov
+   vieme vhodne rozdeliť prácu medzi vlákna za behu programu. Taktiež nemusíme myslieť
+   na správu vlákien pri rekurzii.
 
 2) Jakou hodnotu cut-off jste zvolili? Jaké hodnoty "cut-off" jste zkoušeli, 
    na jak velkých velikostech problému a jakých času jste dosáhli? 
    Odůvodněte vaši volbu.
 
+      Skúšal som hodnoty 1, 2 a 4 (maximálna veľkosť hrany). Najlepšie z toho vyšiel 
+      cutoff = 2, ale nebol veľký rozdiel medzi časmi, pri vstupe bun_zipper_res1 
+      boli najlepšie dosiahnuté časy:
+         1: 66ms, 
+         2: 60ms, 
+         4: 75ms
+      Záver z toho vyvodzujem taký, že pre cutoff 1 prevažuje réžia vytvárania nových taskov
+      nad benefitmi, ale pri cutoff 4 už zbytočne veľa počíta sekvenčne, keď by ešte program
+      mohol pracovať efektívnejšie vo viacerých vláknach.
+
 3) Jakým způsobem zajišťujete ukládání trojúhelníků z několika vláken současně 
    v metodě LoopMeshBuilder::emitTriangle?
 
-   Vytváram kritickú sekciu pomocou #pragma openmp critical.
+   Vytváram kritickú sekciu pomocou `#pragma openmp critical`.
 
 
 Úloha 3: Grafy škálování všech řešení

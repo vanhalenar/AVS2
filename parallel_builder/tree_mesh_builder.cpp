@@ -28,15 +28,14 @@ unsigned TreeMeshBuilder::marchCubes(const ParametricScalarField &field)
 
     Vec3_t<float> cubeOffset(0, 0, 0);
 
-    unsigned totalTriangles = 0;
-#pragma omp parallel shared(totalTriangles)
+#pragma omp parallel
     {
 #pragma omp single nowait
         {
-            totalTriangles = processCube(mGridSize, cubeOffset, field);
+            processCube(mGridSize, cubeOffset, field);
         }
     }
-    return totalTriangles;
+    return mTriangles.size();
 }
 
 unsigned TreeMeshBuilder::processCube(size_t cubeSize, Vec3_t<float> cubeOffset, const ParametricScalarField &field)
@@ -45,7 +44,8 @@ unsigned TreeMeshBuilder::processCube(size_t cubeSize, Vec3_t<float> cubeOffset,
 
     if (cubeSize == 1)
     {
-        return buildCube(cubeOffset, field);
+        buildCube(cubeOffset, field);
+        return 0;
     }
 
     size_t halfSize = cubeSize / 2;
@@ -88,11 +88,11 @@ unsigned TreeMeshBuilder::processCube(size_t cubeSize, Vec3_t<float> cubeOffset,
                 for (int k = 0; k < cubeSize; k++)
                 {
                     Vec3_t<float> cubeOffset(x + i, y + j, z + k);
-                    totalTriangles += buildCube(cubeOffset, field);
+                    buildCube(cubeOffset, field);
                 }
             }
         }
-        return totalTriangles;
+        return 0;
     }
 
     else
@@ -101,13 +101,11 @@ unsigned TreeMeshBuilder::processCube(size_t cubeSize, Vec3_t<float> cubeOffset,
         {
 #pragma omp task shared(totalTriangles, field) firstprivate(halfSize, offsets)
             {
-                unsigned localTriangles = processCube(halfSize, offsets[i], field);
-#pragma omp atomic update
-                totalTriangles += localTriangles;
+                processCube(halfSize, offsets[i], field);
             }
         }
 #pragma omp taskwait
-        return totalTriangles;
+        return 0;
     }
 }
 
